@@ -1,14 +1,14 @@
 package net.mitask.reveonlib.config;
 
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.matcher.ElementMatchers;
 import net.mitask.reveonlib.config.annotations.AutoSave;
 import net.mitask.reveonlib.config.annotations.Config;
 import net.mitask.reveonlib.config.impl.JsonConfig;
 import net.mitask.reveonlib.config.impl.YamlConfig;
 
 import java.io.File;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 @SuppressWarnings("unused")
 public class ConfigLoader {
@@ -37,28 +37,29 @@ public class ConfigLoader {
         T configInstance = configHandler.load();
 
         // Create a proxy to intercept field modifications for auto-saving
-        return new ConfigWrapper<>(createAutoSaveProxy(configInstance, configHandler, autoSave), configHandler);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T createAutoSaveProxy(T configInstance, AbstractConfig<T> configHandler, boolean autoSave) {
-        return (T) Proxy.newProxyInstance(
-                configInstance.getClass().getClassLoader(),
-                configInstance.getClass().getInterfaces(),
-                new AutoSaveHandler<>(configInstance, configHandler, autoSave)
-        );
-    }
-
-    private record AutoSaveHandler<T>(T originalConfig, AbstractConfig<T> configHandler, boolean autoSave) implements InvocationHandler {
-        @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                Object result = method.invoke(originalConfig, args);
-
-                // If it's a setter method, trigger a save
-                if(autoSave && method.getName().startsWith("set")) configHandler.save(originalConfig);
-
-                return result;
-            }
+        try {
+            return new ConfigWrapper<>(createAutoSaveProxy(configInstance, configHandler, autoSave), configHandler);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Failed to create Config!", e);
         }
+    }
+
+    public static <T> T createAutoSaveProxy(T configInstance, AbstractConfig<T> configHandler, boolean autoSave) throws InstantiationException, IllegalAccessException {
+        var configClass = configInstance.getClass();
+        return (T) new ByteBuddy()
+                .subclass(configClass)
+                .method(ElementMatchers.nameStartsWith("set"))
+                .intercept(MethodDelegation.to(new Interceptor<>(configInstance, configHandler, autoSave)))
+                .make()
+                .load(configClass.getClassLoader())
+                .getLoaded()
+                .newInstance();
+    }
+
+    private record Interceptor<T>(T configInstance, AbstractConfig<T> configHandler, boolean autoSave) {
+        public void intercept() throws Throwable {
+            if(autoSave) configHandler.save(configInstance);
+        }
+    }
 }
 
