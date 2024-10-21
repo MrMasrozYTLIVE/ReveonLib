@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group = "net.mitask"
+version = "1.0.3-SNAPSHOT"
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly "org.projectlombok:lombok:1.18.34"
+    annotationProcessor "org.projectlombok:lombok:1.18.34"
+
+    implementation "org.slf4j:slf4j-api:1.7.27"
+    implementation "com.google.code.gson:gson:2.11.0"
+    implementation "org.yaml:snakeyaml:2.3"
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "glassMaven"
+            credentials(PasswordCredentials)
+
+            if (project.version.endsWith("-SNAPSHOT")) {
+                url = "https://maven.glass-launcher.net/snapshots"
+            } else {
+                url = "https://maven.glass-launcher.net/releases"
+            }
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}

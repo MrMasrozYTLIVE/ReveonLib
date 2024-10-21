@@ -8,7 +8,6 @@ public @interface Config {
     String name();
     String path() default "/config/";
     FormatType format() default FormatType.JSON;
-    String wrapperClassName() default "";
 
     enum FormatType {
         JSON, YAML
