@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "net.mitask"
-version = "1.0.4-SNAPSHOT"
+version = "1.0.11-SNAPSHOT"
 
 java {
     toolchain {
@@ -23,8 +23,6 @@ dependencies {
     implementation "org.slf4j:slf4j-api:1.7.27"
     implementation "com.google.code.gson:gson:2.11.0"
     implementation "org.yaml:snakeyaml:2.3"
-
-    implementation 'net.bytebuddy:byte-buddy:1.15.5'
 }
 
 publishing {
