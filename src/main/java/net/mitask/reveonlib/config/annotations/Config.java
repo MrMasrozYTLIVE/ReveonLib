@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Config {
     String name();
-    String path() default "/config/";
+    String path() default "./config/";
     FormatType format() default FormatType.JSON;
 
     enum FormatType {
