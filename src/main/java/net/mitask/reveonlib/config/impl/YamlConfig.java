@@ -4,6 +4,8 @@ import net.mitask.reveonlib.config.AbstractConfig;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class YamlConfig<T> extends AbstractConfig<T> {
     private final Yaml yaml = new Yaml();
@@ -20,12 +22,20 @@ public class YamlConfig<T> extends AbstractConfig<T> {
             return yaml.loadAs(fis, clazz);
         } catch (IOException e) {
             logger.error("Error while loading YamlConfig!", e);
-            return getDefault();
+            configData = getDefault();
+            save(configData);
+            return configData;
         }
     }
 
     @Override
     public void save(T data) {
+        try {
+            Files.createFile(Paths.get(configFile.getCanonicalPath()));
+        } catch (IOException e) {
+            logger.error("Error while creating config file on saving!", e);
+        }
+
         try (FileWriter writer = new FileWriter(configFile)) {
             yaml.dump(data, writer);
             notifyListeners(data);

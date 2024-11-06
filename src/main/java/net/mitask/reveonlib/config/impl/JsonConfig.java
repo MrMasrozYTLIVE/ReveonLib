@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class JsonConfig<T> extends AbstractConfig<T> {
     private final Class<T> clazz;
@@ -24,12 +26,20 @@ public class JsonConfig<T> extends AbstractConfig<T> {
             return gson.fromJson(reader, clazz);
         } catch (IOException e) {
             logger.error("Error while loading JsonConfig!", e);
-            return getDefault();
+            configData = getDefault();
+            save(configData);
+            return configData;
         }
     }
 
     @Override
     public void save(T data) {
+        try {
+            Files.createFile(Paths.get(configFile.getCanonicalPath()));
+        } catch (IOException e) {
+            logger.error("Error while creating config file on saving!", e);
+        }
+
         try (FileWriter writer = new FileWriter(configFile)) {
             gson.toJson(data, writer);
             notifyListeners(data);

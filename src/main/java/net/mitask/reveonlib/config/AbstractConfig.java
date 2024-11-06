@@ -11,7 +11,7 @@ public abstract class AbstractConfig<T> implements IConfig<T> {
     protected final File configFile;
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final List<ConfigListener<T>> listeners = new ArrayList<>();
-    private T configData;
+    protected T configData;
 
     public AbstractConfig(File file) {
         this.configFile = file;
