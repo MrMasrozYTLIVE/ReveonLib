@@ -81,6 +81,10 @@ public class ConfigProcessor extends AbstractProcessor {
                 writer.write("        configHandler.save(loadedConfig);\n");
                 writer.write("    }\n\n");
 
+                writer.write("    public void reload() {\n");
+                writer.write("        configHandler.reload();\n");
+                writer.write("    }\n\n");
+
                 writer.write("    public void addListener(ConfigListener<" + simpleName + "> listener) {\n");
                 writer.write("        configHandler.addListener(listener);\n");
                 writer.write("    }\n");
