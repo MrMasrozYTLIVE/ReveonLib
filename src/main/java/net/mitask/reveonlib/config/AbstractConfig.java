@@ -45,7 +45,7 @@ public abstract class AbstractConfig<T> implements IConfig<T> {
     @Override
     public T reload() {
         configData = loadConfig();
-        notifyListeners(configData);
+//        notifyListeners(configData);
         return configData;
     }
 
