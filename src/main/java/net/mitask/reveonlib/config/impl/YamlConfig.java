@@ -7,6 +7,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+@Deprecated
 public class YamlConfig<T> extends AbstractConfig<T> {
     private final Yaml yaml = new Yaml();
     private final Class<T> clazz;

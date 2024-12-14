@@ -15,6 +15,7 @@ import java.util.Set;
 @AutoService(Processor.class)
 @SupportedAnnotationTypes("net.mitask.reveonlib.config.annotations.Config")
 @SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_17)
+@SuppressWarnings("unused")
 public class ConfigProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -32,9 +33,6 @@ public class ConfigProcessor extends AbstractProcessor {
         String path = config.path();
 
         try {
-//            Files.createDirectories(Paths.get("src/main/generated/"));
-//            String fullClassName = "src/main/generated/" + packageName.replace('.', '/') + "/" + className + ".java";
-
             JavaFileObject configFile = processingEnv.getFiler().createSourceFile(packageName + "." + className);
             String configClass = config.format() == Config.FormatType.JSON ? "JsonConfig" : "YamlConfig";
 
@@ -44,6 +42,7 @@ public class ConfigProcessor extends AbstractProcessor {
             String simpleName = element.getSimpleName().toString();
             try (Writer writer = configFile.openWriter()) {
                 writer.write("package " + packageName + ";\n\n");
+
                 writer.write("import java.io.*;\n");
                 writer.write("import net.mitask.reveonlib.config.impl." + configClass + ";\n");
                 writer.write("import net.mitask.reveonlib.config.AbstractConfig;\n");
@@ -59,6 +58,7 @@ public class ConfigProcessor extends AbstractProcessor {
                 writer.write("        File configFile = new File(\"" + path + "\", \"" + configFileName + "\");\n");
                 writer.write("        this.configHandler = new " + configClass +"<>(configFile, " + simpleName + ".class);\n");
                 writer.write("        loadedConfig = configHandler.load();\n");
+                writer.write("        save();\n");
                 writer.write("    }\n\n");
 
                 for (Element field : element.getEnclosedElements()) {
