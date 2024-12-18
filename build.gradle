@@ -35,7 +35,7 @@ publishing {
         maven {
             name = "glassMaven"
             credentials(PasswordCredentials)
-            projVer = project.version as String
+            def projVer = project.version as String
 
             if (projVer.endsWith("-SNAPSHOT") || (projVer.indexOf('.') == -1)) {
                 url = "https://maven.glass-launcher.net/snapshots"
