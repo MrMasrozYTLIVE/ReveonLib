@@ -8,9 +8,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+@SuppressWarnings("unused")
 public class JsonConfig<T> extends AbstractConfig<T> {
     private final Class<T> clazz;
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -36,7 +38,7 @@ public class JsonConfig<T> extends AbstractConfig<T> {
     public void save(T data) {
         try {
             Files.createFile(Paths.get(configFile.getCanonicalPath()));
-        } catch (IOException e) {
+        } catch (FileAlreadyExistsException ignored) {} catch (IOException e) {
             logger.error("Error while creating config file on saving!", e);
         }
 

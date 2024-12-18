@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "net.mitask"
-version = project.hasProperty("override_version") ? (project.properties["override_version"] as String).substring(0, 7) : "1.0.26-SNAPSHOT"
+version = project.hasProperty("override_version") ? (project.properties["override_version"] as String).substring(0, 7) : "1.1.0"
 
 java {
     toolchain {
@@ -35,7 +35,9 @@ publishing {
         maven {
             name = "glassMaven"
             credentials(PasswordCredentials)
-            if (project.version.endsWith("-SNAPSHOT")) {
+            projVer = project.version as String
+
+            if (projVer.endsWith("-SNAPSHOT") || (projVer.indexOf('.') == -1)) {
                 url = "https://maven.glass-launcher.net/snapshots"
             } else {
                 url = "https://maven.glass-launcher.net/releases"

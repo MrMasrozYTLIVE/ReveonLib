@@ -12,7 +12,6 @@ public @interface Config {
 
     enum FormatType {
         JSON,
-        @Deprecated
-        YAML
+        @Deprecated YAML
     }
 }

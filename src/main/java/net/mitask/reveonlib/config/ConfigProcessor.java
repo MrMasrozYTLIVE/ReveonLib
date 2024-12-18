@@ -91,6 +91,8 @@ public class ConfigProcessor extends AbstractProcessor {
 
                 writer.write("}\n");
             }
+
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Config class was generated!");
         } catch (Exception e) {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Failed to generate config class: " + e.getMessage());
         }
