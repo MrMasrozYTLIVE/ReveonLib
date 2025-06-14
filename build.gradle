@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "net.mitask"
-version = project.hasProperty("override_version") ? (project.properties["override_version"] as String).substring(0, 7) : "1.2.0"
+version = project.hasProperty("override_version") ? (project.properties["override_version"] as String).substring(0, 7) : "1.3.0"
 
 java {
     toolchain {
